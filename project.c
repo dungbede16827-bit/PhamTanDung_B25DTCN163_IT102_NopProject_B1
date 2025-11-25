@@ -310,7 +310,7 @@ void addOrderForm  () {
 		strcpy(nameLower, Product1[i].name);
 		 toLower(nameLower);
         
-		// So sánh:
+		// So sanh:
         // 1) ID so sanh chinh xac
         // 2) Name so sánh khong phan biet hoa thuong
         if (strcmp(Product1[i].productId, key) == 0 ||
