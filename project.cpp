@@ -18,8 +18,12 @@ struct Transaction {
 	char date[15];
 
 };
-int size=0;
-struct Product Product1[MAX];
+
+struct Product Product1[MAX] = {
+	{"P001", "Sua hop", "Hop", 50 , 1},
+    {"P002", "Mi tom", "Goi", 120  , 1}
+};
+int size=2;
 char key[20];
 
 
@@ -27,6 +31,8 @@ void printMenu();
 void remoNewline ();
 void addOrderForm();
 void updateProduct();
+void management();
+void FindMaterial();
 int main() {
 	int choice ;
 	
@@ -43,8 +49,10 @@ int main() {
 				updateProduct() ;
 				break;
 			case 3 :
+				management();
 				break;
 			case 4 :
+				FindMaterial();
 				break;
 			case 5 :
 				break;
@@ -97,6 +105,10 @@ void remoNewline (char str[]) { // xoa ki tu enter
 
 
 void addOrderForm  () {
+	if(size == MAX) {
+		printf("Danh sach day, Them moi hang hoa that bai !! \n");
+		return;
+	}
 	int n;
 	printf("_________ Them Ma hang moi _________ \n");
 
@@ -175,7 +187,7 @@ void addOrderForm  () {
         Product1[size] = p;
         size++;
 
-        printf("==> Da them thanh cong san pham!\n");
+        printf("==> Da them thanh cong san pham , mang da co phan tu moi!\n");
     }
 }
 	void updateProduct () {
@@ -192,7 +204,7 @@ void addOrderForm  () {
         }
     }
         if (found == -1) {
-        printf("Khong tim thay san pham voi ma hang nay!\n");
+        printf("Vat tu %s khong ton tai !\n",key);
         return;
     }
         while (1) {
@@ -233,11 +245,55 @@ void addOrderForm  () {
 
         
 
-        printf("==> Da cap nhat thanh cong san pham!\n");
+        printf("==> Cap nhat hang hoa %s thanh cong  !\n",key);
     }
-
-			
+	
+	void management() {
+		printf("nhap ma vat tu can thay doi trang thai : \n");
 		
+		fgets(key,sizeof(key),stdin);
+		remoNewline(key);
+		int found = -1 ;
+		
+		for(int i = 0 ; i < size ; i++) {
+			if(strcmp(Product1[i].productId,key)==0) {
+			found = i;
+			break;
+		}
+		}
+		
+		if(found== -1) {
+			printf("Ma vat tu %s khong ton tai trong danh sach  !!! \n ",key);
+			return;
+		}
+			Product1[found].status = 0;
+			printf("Doi trang thai hang hoa %s thanh cong !! \n",key);
+	}		
+	void FindMaterial() {
+		printf("Nhap ma vat tu hoac ten vat tu !! \n ");
+		fgets(key,sizeof(key),stdin);
+		remoNewline(key);
+		
+		int found = -1;
+		
+		for(int i = 0 ; i <size ; i++) {
+			if(strcmp(Product1[i].productId,key)==0 || strcmp(Product1[i].name,key)==0) {
+				found = i;
+				break;
+			}
+		}
+		if(found==-1) {
+			printf("khong tim thay !! \n");
+			return;
+		}
+				
+		printf("_______________________ DANH SACH HANG HOA DUOC TIM THAY_____________________________ \n");	
+		printf("|Ten san pham : %s | Don vi Hang hoa : %s |So luong ton kho  : %d|Trang thai : %d| \n",Product1[found].name,Product1[found].unit,Product1[found].qty,Product1[found].status);
+		printf("_____________________________________________________________________________________ \n");
+		
+		
+		
+	}
 
 
 
