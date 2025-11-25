@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #define MAX 100
+#include <ctype.h>
 
 
 struct Product {
@@ -20,13 +21,16 @@ struct Transaction {
 };
 
 struct Product Product1[MAX] = {
-	{"P001", "Sua hop", "Hop", 50 , 1},
-    {"P002", "Mi tom", "Goi", 120  , 1}
+	{"P001", "Sua hop",      "Hop",   50,  1},
+    {"P002", "Mi tom",       "Goi",   120, 1},  
+    {"P008", "But bi",       "cay",   120, 1},
+    {"P005", "Vo ke ngang",  "quyen", 50,  1},
+    {"P003", "Thuoc nhuom",  "hop",   0,   1}
 };
-int size=2;
+int size=5;
 char key[20];
 
-
+void toLower();
 void printMenu();
 void remoNewline ();
 void addOrderForm();
@@ -57,6 +61,7 @@ int main() {
 				FindMaterial();
 				break;
 			case 5 :
+				listMaterial();
 				break;
 			case 6 :
 				break;
@@ -105,6 +110,15 @@ void remoNewline (char str[]) { // xoa ki tu enter
 	str[strcspn(str,"\n")]='\0';
 };
 
+void toLower(char s[]){ // doi chua hoa thanh chu thuong
+    int i=0;
+    while(s[i]!='\0'){
+        if(s[i]>='A'&&s[i]<='Z'){
+            s[i]=s[i]+32;
+        }
+        i++;
+    }
+}
 
 void addOrderForm  () {
 	if(size == MAX) {
@@ -268,33 +282,53 @@ void addOrderForm  () {
 			printf("Ma vat tu %s khong ton tai trong danh sach  !!! \n ",key);
 			return;
 		}
-			Product1[found].status = 0;
+		if(Product1[found].status !=0) {
+			Product1[found].status= 0;
 			printf("Doi trang thai hang hoa %s thanh cong !! \n",key);
+		} else {
+			printf(" trang thai hang hoa %s dang o 0  !! \n",key);
+		}
+			
+			
+			
 	}		
 	void FindMaterial() {
-		printf("Nhap ma vat tu hoac ten vat tu !! \n ");
+		printf("Nhap ma vat tu hoac ten vat tu de tim kiem : \n ");
 		fgets(key,sizeof(key),stdin);
 		remoNewline(key);
 		
-		int found = -1;
+	
+		
+		toLower(key);
+		
+		int found = 0;
 		
 		for(int i = 0 ; i <size ; i++) {
-			if(strcmp(Product1[i].productId,key)==0 || strcmp(Product1[i].name,key)==0) {
-				found = i;
-				break;
-			}
-		}
-		if(found==-1) {
-			printf("khong tim thay !! \n");
-			return;
-		}
-				
-		printf("_______________________ DANH SACH HANG HOA DUOC TIM THAY_____________________________ \n");	
-		printf("|Ten san pham : %s | Don vi Hang hoa : %s |So luong ton kho  : %d|Trang thai : %d| \n",Product1[found].name,Product1[found].unit,Product1[found].qty,Product1[found].status);
-		printf("_____________________________________________________________________________________ \n");
-		
-	
+			
+		// chuyen name cua san pham sang chua thuong de so sanh
+		char nameLower[50];
+		strcpy(nameLower, Product1[i].name);
+		 toLower(nameLower);
+        
+		// So sánh:
+        // 1) ID so sanh chinh xac
+        // 2) Name so sánh khong phan biet hoa thuong
+        if (strcmp(Product1[i].productId, key) == 0 ||
+            strstr(nameLower, key) != NULL)
+        {
+        	
+            printf("| Ten: %s | Don vi: %s | Ton kho: %d | Trang thai: %d |\n",
+                   Product1[i].name, Product1[i].unit, Product1[i].qty, Product1[i].status);
+            found++;
+        }
+    }
+
+    if (found== 0) {
+        printf("Khong tim thay san pham nao!\n");
+    } else {
+    	printf("Tim thay tong %d vat tu \n ",found);
 	}
+}
 
 	void listMaterial() {
 		int page = 1;
@@ -305,7 +339,7 @@ void addOrderForm  () {
 		
 		while(1) {
 			
-			printf("Moi ban chon so trang can xem (1-%d)",total_page);
+			printf("Moi ban chon so trang can xem (1-%d) : \n",total_page);
 			scanf("%d",&page);
 			
 			// kiem tra dieu kien
@@ -313,7 +347,23 @@ void addOrderForm  () {
 			// vi tri bat dau den ket thuc
 			int start = (page-1)*itemPerPage;
 			int end = start + itemPerPage;
-		}
-	}
+				 printf("Trang %d/%d :\n\n", page, total_page); // trang 1/5
+       			printf("+---+------------------------------+--------------------+----------+\n");
+ 		      printf("|%-3s|%-30s|%-20s|%-10s|\n", "MA", "Ten vat pham","Don vi hang hoa","So luong ton kho");
+     		  printf("+---+------------------------------+--------------------+----------+\n");
+      			 for (int i = start; i < end && i < size; i++) {
+          		 printf("|%-3s|%-30s|%-20d|%-10d|\n", Product1[i].productId, Product1[i].name, Product1[i].unit, Product1[i].qty);
+      			 }
+      			 printf("+---+------------------------------+--------------------+----------+\n");
+       			 fflush(stdin);
+      			 printf("Ban co muon thoat hay ko ? (y/n)");
+       			char ch = getchar();
+    		   if (ch == 'y' || ch == 'Y') {
+    	       break;
+   			    }
+  				 }
+
+};
+	
 
 
