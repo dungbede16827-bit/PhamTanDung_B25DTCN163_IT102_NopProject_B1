@@ -38,7 +38,8 @@ void updateProduct();
 void management();
 void FindMaterial();
 void listMaterial();
-
+void sortingMaterial();
+void printMaterial();
 int main() {
 	int choice ;
 	
@@ -64,6 +65,7 @@ int main() {
 				listMaterial();
 				break;
 			case 6 :
+				sortingMaterial();
 				break;
 			case 7 :
 				break;
@@ -334,36 +336,116 @@ void addOrderForm  () {
 		int page = 1;
 		int itemPerPage = 10;
 		// tinh tong so trang 
-		int sum = size/itemPerPage;
-		int total_page = (size % itemPerPage == 0 )? sum : sum+1;
+		int numPage = size/itemPerPage; // tim xem so trang khong tinh le la bao nhieu 
+		int total_page = (size % itemPerPage == 0 )? numPage : numPage+1; // kiem tra dieu kien chia het hay khong ? neu chia het numPage giua nguyen 
+		// neu chia du thi numPage + 1 trang
 		
 		while(1) {
 			
 			printf("Moi ban chon so trang can xem (1-%d) : \n",total_page);
 			scanf("%d",&page);
-			
 			// kiem tra dieu kien
-			
-			// vi tri bat dau den ket thuc
-			int start = (page-1)*itemPerPage;
-			int end = start + itemPerPage;
-				 printf("Trang %d/%d :\n\n", page, total_page); // trang 1/5
-       			printf("+---+------------------------------+--------------------+----------+\n");
- 		      printf("|%-3s|%-30s|%-20s|%-10s|\n", "MA", "Ten vat pham","Don vi hang hoa","So luong ton kho");
-     		  printf("+---+------------------------------+--------------------+----------+\n");
-      			 for (int i = start; i < end && i < size; i++) {
-          		 printf("|%-3s|%-30s|%-20d|%-10d|\n", Product1[i].productId, Product1[i].name, Product1[i].unit, Product1[i].qty);
+			if(page < 0 || page > total_page) {
+				printf("loi nhap sai so trang !! \n");
+				continue;
+			} else {
+				int start = (page-1)*itemPerPage; 	// vi tri bat dau den ket thuc
+			    int end = start + itemPerPage;
+			    
+				printf("Trang %d/%d :\n\n", page, total_page); // trang 1/5
+  	            printf("+---+------------------------------+--------------------+----------+\n");
+ 		     	printf("|%-3s|%-30s|%-20s|%-10s|\n", "MA", "Ten vat pham","Don vi hang hoa","So luong ton kho");
+     		 	printf("+---+------------------------------+--------------------+----------+\n");
+     		 	
+      			for (int i = start; i < end && i < size; i++) {
+          		printf("|%-3s|%-30s|%-20d|%-10d|\n", Product1[i].productId, Product1[i].name, Product1[i].unit, Product1[i].qty);
       			 }
-      			 printf("+---+------------------------------+--------------------+----------+\n");
-       			 fflush(stdin);
-      			 printf("Ban co muon thoat hay ko ? (y/n)");
+      			printf("+---+------------------------------+--------------------+----------+\n");
+       			fflush(stdin);
+      			printf("Ban co muon thoat hay ko ? (y/n)");
        			char ch = getchar();
-    		   if (ch == 'y' || ch == 'Y') {
-    	       break;
-   			    }
+    		  	if (ch == 'y' || ch == 'Y') {
+    	      	break;
+   			    	}
   				 }
+			}
+			
+			
+			
+		
+			
 
 };
+
+void printMaterial() {
+
+    printf("+---+------------------------------+--------------------+----------+\n");
+ 	printf("|%-3s|%-30s|%-20s|%-10s|\n", "MA", "Ten vat pham","Don vi hang hoa","So luong ton kho");
+    printf("+---+------------------------------+--------------------+----------+\n");
+    for (int i = 0; i < size ; i++) {
+    		printf("|%-3s|%-30s|%-20d|%-10d|\n", Product1[i].productId, Product1[i].name, Product1[i].unit, Product1[i].qty);
+      			 }
+      			 printf("+---+------------------------------+--------------------+----------+\n");
+       			 
+}
+
+void sortingMaterial(){
+	struct Product temp;
+	if(size==0) {
+		printf("Danh sach hang hoa rong \n");
+		return;
+	}
+	int choice;
+	
+		printf("Sap xep theo ten hoac so luong : \n");
+		printf("chon 1 de sap xep theo so luong  \n  Chon 2 de sap xep theo ten \n");
+		while(1) {
+			scanf("%d",&choice); 
+			if(choice==1 || choice == 2) {
+				break;
+			} else {
+				printf("LOI !!!");
+				continue;
+			}
+		}
+	
+		
+		switch(choice) {
+			case 1:
+				for(int i =0 ; i < size ; i++){
+					for(int j=0 ; j < size - i - 1 ;j++){
+						if(Product1[j].qty > Product1[j+1].qty  ) {
+							temp = Product1[j];
+							Product1[j] = Product1[j+1];
+							Product1[j+1]= temp;
+						}
+					}	
+				}
+				printf("da sap xep thanh cong \n");
+				printMaterial();
+				
+				break;
+			case 2:
+				for(int i =0 ; i < size ; i++){
+					for(int j=0 ; j < size - i - 1 ;j++){
+						if(strcmp(Product1[j].name, Product1[j+1].name)>0  ) {
+							temp = Product1[j];
+							Product1[j] = Product1[j+1];
+							Product1[j+1]= temp;
+						}
+					}	
+				}
+				printf("da sap xep thanh cong \n");
+				printMaterial();
+				break;
+					
+			
+		}
+	
+	
+	
+}
+	
 	
 
 
