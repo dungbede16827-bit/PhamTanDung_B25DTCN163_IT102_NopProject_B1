@@ -23,23 +23,40 @@ struct Transaction {
 struct Product Product1[MAX] = {
 	{"P001", "Sua hop",      "Hop",   50,  1},
     {"P002", "Mi tom",       "Goi",   120, 1},  
-    {"P008", "But bi",       "cay",   120, 1},
+    {"P004", "But bi",       "cay",   120, 1},
     {"P005", "Vo ke ngang",  "quyen", 50,  1},
-    {"P003", "Thuoc nhuom",  "hop",   0,   1}
+    {"P003", "Thuoc nhuom",  "hop",   0,   1},
+    {"P006", "Tai Nghe Gaming", "cai", 55, 1},
+    {"P007", "Ban Di Chuot", "cai", 80, 1},
+    {"P008", "RAM 8GB DDR4", "thanh", 60, 1},
+    {"P009", "RAM 16GB DDR4", "thanh", 35, 1},
+    {"P010", "SSD 256GB", "cai", 45, 1},
+    {"P011", "SSD 512GB", "cai", 25, 1},
+    {"P012", "Camera Web", "cai", 20, 1},
+    {"P013", "Day HDMI 1.5m", "cai", 90, 1},
+    {"P014", "Pin Sac Du Phong 10000mAh", "cai", 50 , 1}
 };
-int size=5;
+int size=14;
+
+struct Transaction Transactions[MAX];
+int transSize = 0;
+
+
 char key[20];
 
-void toLower();
+int findProduct();
+void toLower(); // ham chuyen chu cai tu hoa thanh thuong
 void printMenu();
-void remoNewline ();
-void addOrderForm();
+void remoNewline (); // xoa xuong dong
+void addOrderForm(); // them vat tu vao trong danh sach
 void updateProduct();
 void management();
 void FindMaterial();
 void listMaterial();
 void sortingMaterial();
 void printMaterial();
+void In_Out_Transaction(); // ham xuat nhap 
+void historyTransaction(); // xem lai lich su xuat nhap hang hoa
 int main() {
 	int choice ;
 	
@@ -68,8 +85,10 @@ int main() {
 				sortingMaterial();
 				break;
 			case 7 :
+				In_Out_Transaction();
 				break;
 			case 8 :
+				historyTransaction();
 				break;
 			case 9 :
 				break;
@@ -311,11 +330,13 @@ void addOrderForm  () {
 		char nameLower[50];
 		strcpy(nameLower, Product1[i].name);
 		 toLower(nameLower);
-        
+        char idLower[50];
+        strcpy(idLower,Product1[i].productId);
+        toLower(idLower);
 		// So sanh:
         // 1) ID so sanh chinh xac
         // 2) Name so sánh khong phan biet hoa thuong
-        if (strcmp(Product1[i].productId, key) == 0 ||
+        if (strstr(idLower, key) != NULL ||
             strstr(nameLower, key) != NULL)
         {
         	
@@ -353,14 +374,14 @@ void addOrderForm  () {
 			    int end = start + itemPerPage;
 			    
 				printf("Trang %d/%d :\n\n", page, total_page); // trang 1/5
-  	            printf("+---+------------------------------+--------------------+----------+\n");
- 		     	printf("|%-3s|%-30s|%-20s|%-10s|\n", "MA", "Ten vat pham","Don vi hang hoa","So luong ton kho");
-     		 	printf("+---+------------------------------+--------------------+----------+\n");
+  	            printf("+----+------------------------------+-------------------+----------------+\n");
+ 		     	printf("|%-4s|%-30s|%-19s|%-16s|\n", "MA", "Ten vat pham","Don vi hang hoa","So luong ton kho");
+     		 	printf("+----+------------------------------+-------------------+----------------+\n");
      		 	
       			for (int i = start; i < end && i < size; i++) {
-          		printf("|%-3s|%-30s|%-20d|%-10d|\n", Product1[i].productId, Product1[i].name, Product1[i].unit, Product1[i].qty);
+          		printf("|%-4s|%-30s|%-19s|%-16d|\n", Product1[i].productId, Product1[i].name, Product1[i].unit, Product1[i].qty);
       			 }
-      			printf("+---+------------------------------+--------------------+----------+\n");
+      			printf("+----+------------------------------+-------------------+----------------+\n");
        			fflush(stdin);
       			printf("Ban co muon thoat hay ko ? (y/n)");
        			char ch = getchar();
@@ -379,13 +400,20 @@ void addOrderForm  () {
 
 void printMaterial() {
 
-    printf("+---+------------------------------+--------------------+----------+\n");
- 	printf("|%-3s|%-30s|%-20s|%-10s|\n", "MA", "Ten vat pham","Don vi hang hoa","So luong ton kho");
-    printf("+---+------------------------------+--------------------+----------+\n");
-    for (int i = 0; i < size ; i++) {
-    		printf("|%-3s|%-30s|%-20d|%-10d|\n", Product1[i].productId, Product1[i].name, Product1[i].unit, Product1[i].qty);
-      			 }
-      			 printf("+---+------------------------------+--------------------+----------+\n");
+    printf("+------------+------------------------------+----------------------+----------------------+\n");
+printf("| %-10s | %-27s | %-20s | %-20s |\n",
+       "Ma", "Ten vat pham", "Don vi", "Ton kho");
+printf("+------------+------------------------------+----------------------+----------------------+\n");
+
+for (int i = 0; i < size; i++) {
+    printf("| %-10s | %-27s | %-20s | %-20d |\n",
+           Product1[i].productId,
+           Product1[i].name,
+           Product1[i].unit,
+           Product1[i].qty);
+}
+
+printf("+------------+------------------------------+----------------------+----------------------+\n");
        			 
 }
 
@@ -421,8 +449,9 @@ void sortingMaterial(){
 						}
 					}	
 				}
+				
 				printf("da sap xep thanh cong \n");
-				printMaterial();
+				listMaterial();
 				
 				break;
 			case 2:
@@ -436,7 +465,7 @@ void sortingMaterial(){
 					}	
 				}
 				printf("da sap xep thanh cong \n");
-				printMaterial();
+				listMaterial();
 				break;
 					
 			
@@ -445,7 +474,133 @@ void sortingMaterial(){
 	
 	
 }
+
+// ham tim kiem phan tu theo ma 
+int findProduct(char id[]) {
+	  for (int i = 0; i < size; i++) {
+        if (strcmp(Product1[i].productId, id) == 0)
+            return i;
+    }
+    return -1;
+
+}
+	
+void In_Out_Transaction() {
+	char id[20]; // nhap ma id tim kiem
+    char type[5]; // luu loai dao dich in hoac out
+    int quantity; // so luong nhap hoac xuat 
+
+    printf("Nhap ma vat tu: \n");
+    fflush(stdin);
+    fgets(id, sizeof(id), stdin);
+    remoNewline(id);
+
+    // Tim san pham
+    int index = findProduct(id); // tim vi tri trong mang id neu kh tim thay thi la -1
+
+    if (index == -1) {
+        printf("Ma vat tu khong ton tai!\n"); // kh co dung luon ham
+        return;
+    }
+
+    printf("Ban muon (IN/OUT): \n");
+    fflush(stdin);
+    fgets(type, sizeof(type), stdin);
+    remoNewline(type);
+    toLower(type); // chuyan cac chu thanh chu thuong
+
+    // Kiem tra loi giao dich
+    if (strcmp(type, "in") != 0 && strcmp(type, "out") != 0) { 
+    // kiem tra neu khac chu nang nhap thi in ra 
+        printf("Loai giao dich khong hop le!\n");
+        return;
+    }
+
+    printf("Nhap so luong: ");
+    scanf("%d", &quantity);
+
+    if (quantity <= 0) {
+        printf("So luong phai > 0!\n");
+        return;
+    }
+
+    // ======= GIAO DiCH XUAT (OUT) ======
+    if (strcmp(type, "out") == 0) {
+        if (Product1[index].qty < quantity) {
+            printf("Khong du so luong de xuat!\n");
+            return;
+        }
+        Product1[index].qty -= quantity;
+        printf("Xuat kho thanh cong!\n");
+    }
+
+    // ======= GIAO DiCH NHaP (IN) ======
+    else {
+        Product1[index].qty += quantity;
+        printf("Nhap kho thanh cong!\n");
+    }
+
+    // ======== LUU LiCH Su GIAO DiCH =========
+
+    char transId[20];
+    int createTransId(transId);
+
+    strcpy(Transactions[transSize].transId, transId);
+    strcpy(Transactions[transSize].productId, id);
+    strcpy(Transactions[transSize].type, type);
+
+    // Lay ngay hien thi (don gian)
+    strcpy(Transactions[transSize].date, "2025-01-01");
+
+    transSize++;
+}
+
+void historyTransaction () {
+	
+	 
+        printf("Moi ban nhap ma vat tu : \n");
+        fgets(key, sizeof(key), stdin);
+        remoNewline(key);
+
+        if (strlen(key) == 0) {
+            printf("Ma san pham khong duoc rong!\n");
+            return;   
+        }
+        
+    int index = 0; // duyet tu giao dich dau tien
+    int n = transSize;       // tong so giao dich
+    int totalTrans = 0; // dem xem co bao nhieu giao dich
+        
+
+
+	
+	while (index < n) {
+        if (strcmp(Transactions[index].productId, key) == 0) {
+            // Hien thi thong tin giao dich
+            printf("\n--- Giao dich %d ---\n", totalTrans + 1);
+            printf("Ma giao dich: %s\n", Transactions[index].transId);
+            printf("Loai: %s\n", Transactions[index].type);
+            printf("Ngay: %s\n", Transactions[index].date);
+
+            totalTrans++;
+        }
+
+        index++;
+    }
+
+    // ======= KIEM TRA CO GIAO DICH KHONG =======
+    if (totalTrans == 0) {
+        printf("\n Vat tu '%s' chua co giao dich nhap/xuat! \n", key);
+    } else {
+        printf("\n Vat tu '%s' co tong cong %d giao dich.  \n", key, totalTrans);
+    }
+
 	
 	
+}
+	
+	
+	
+
 
 
