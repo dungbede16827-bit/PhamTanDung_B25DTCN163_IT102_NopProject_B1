@@ -91,9 +91,10 @@ int main() {
 				historyTransaction();
 				break;
 			case 9 :
-				break;
-					default:
-						printf("Lua chon khong hop le vui long nhap lai !!! \n ");
+				printf("Thoat chuong trinh !!! \n");
+				return;
+			default:
+				printf("Lua chon khong hop le vui long nhap lai !!! \n ");
 			
 			
 		}
@@ -336,7 +337,7 @@ void addOrderForm  () {
 		// So sanh:
         // 1) ID so sanh chinh xac
         // 2) Name so sánh khong phan biet hoa thuong
-        if (strstr(idLower, key) != NULL ||
+        if (strcmp(idLower, key) == 0 ||
             strstr(nameLower, key) != NULL)
         {
         	
@@ -491,9 +492,18 @@ void In_Out_Transaction() {
     int quantity; // so luong nhap hoac xuat 
 
     printf("Nhap ma vat tu: \n");
-    fflush(stdin);
+    while(1) {
+    	fflush(stdin);
     fgets(id, sizeof(id), stdin);
     remoNewline(id);
+    
+    if (strlen(id) == 0) {
+            printf("Khong duoc de trong ma vat tu!\n");
+            continue;
+        }
+        break;
+	}
+    
 
     // Tim san pham
     int index = findProduct(id); // tim vi tri trong mang id neu kh tim thay thi la -1
@@ -502,6 +512,13 @@ void In_Out_Transaction() {
         printf("Ma vat tu khong ton tai!\n"); // kh co dung luon ham
         return;
     }
+    
+        
+    if(Product1[index].status==0){
+			printf("Vat tu %s da het han su dung!!\n",id);
+			return;
+		}
+		
 
     printf("Ban muon (IN/OUT): \n");
     fflush(stdin);
@@ -516,13 +533,23 @@ void In_Out_Transaction() {
         return;
     }
 
-    printf("Nhap so luong: ");
-    scanf("%d", &quantity);
-
-    if (quantity <= 0) {
-        printf("So luong phai > 0!\n");
-        return;
+    
+	while (1) {
+		printf("Nhap so luong: ");
+		 
+    	 if (scanf("%d", &quantity) != 1) {
+        printf("Gia tri khong hop le! Vui long nhap so.\n");
+        fflush(stdin);
+        while (getchar() != '\n'); // Xoa buffer
+        continue;
     }
+		if (quantity <= 0 ) {
+        printf("So luong phai > 0!\n");
+        continue;
+    }
+    break;
+	}
+ 	
 
     // ======= GIAO DiCH XUAT (OUT) ======
     if (strcmp(type, "out") == 0) {
