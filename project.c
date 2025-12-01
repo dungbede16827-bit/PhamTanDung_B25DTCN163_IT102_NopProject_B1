@@ -57,6 +57,7 @@ void sortingMaterial();
 void printMaterial();
 void In_Out_Transaction(); // ham xuat nhap 
 void historyTransaction(); // xem lai lich su xuat nhap hang hoa
+void createTransId();
 int main() {
 	int choice ;
 	
@@ -367,7 +368,7 @@ void addOrderForm  () {
 			printf("Moi ban chon so trang can xem (1-%d) : \n",total_page);
 			scanf("%d",&page);
 			// kiem tra dieu kien
-			if(page < 0 || page > total_page) {
+			if(page <= 0 || page > total_page) {
 				printf("loi nhap sai so trang !! \n");
 				continue;
 			} else {
@@ -399,24 +400,6 @@ void addOrderForm  () {
 
 };
 
-void printMaterial() {
-
-    printf("+------------+------------------------------+----------------------+----------------------+\n");
-printf("| %-10s | %-27s | %-20s | %-20s |\n",
-       "Ma", "Ten vat pham", "Don vi", "Ton kho");
-printf("+------------+------------------------------+----------------------+----------------------+\n");
-
-for (int i = 0; i < size; i++) {
-    printf("| %-10s | %-27s | %-20s | %-20d |\n",
-           Product1[i].productId,
-           Product1[i].name,
-           Product1[i].unit,
-           Product1[i].qty);
-}
-
-printf("+------------+------------------------------+----------------------+----------------------+\n");
-       			 
-}
 
 void sortingMaterial(){
 	struct Product temp;
@@ -485,7 +468,10 @@ int findProduct(char id[]) {
     return -1;
 
 }
-	
+	void createTransId(char *id) {
+    static int counter = 1; 
+    sprintf(id, "T%04d", counter++);
+	}	
 void In_Out_Transaction() {
 	char id[20]; // nhap ma id tim kiem
     char type[5]; // luu loai dao dich in hoac out
@@ -570,7 +556,7 @@ void In_Out_Transaction() {
     // ======== LUU LiCH Su GIAO DiCH =========
 
     char transId[20];
-    int createTransId(transId);
+   	createTransId(transId);
 
     strcpy(Transactions[transSize].transId, transId);
     strcpy(Transactions[transSize].productId, id);
@@ -604,10 +590,18 @@ void historyTransaction () {
 	while (index < n) {
         if (strcmp(Transactions[index].productId, key) == 0) {
             // Hien thi thong tin giao dich
-            printf("\n--- Giao dich %d ---\n", totalTrans + 1);
-            printf("Ma giao dich: %s\n", Transactions[index].transId);
-            printf("Loai: %s\n", Transactions[index].type);
-            printf("Ngay: %s\n", Transactions[index].date);
+        printf("\n+----------------------+----------------------+----------------------+----------------------+\n");
+		printf("| %-20s | %-20s | %-20s | %-20s |\n", 
+       "STT", "Ma giao dich", "Loai", "Ngay");
+		printf("+----------------------+----------------------+----------------------+----------------------+\n");
+
+		printf("| %-20d | %-20s | %-20s | %-20s |\n",
+       index + 1,
+       Transactions[index].transId,
+       Transactions[index].type,
+       Transactions[index].date);
+
+		printf("+----------------------+----------------------+----------------------+----------------------+\n");
 
             totalTrans++;
         }
